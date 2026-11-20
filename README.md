@@ -28,6 +28,14 @@ The output ends with a list of questions for humans: one per dispute, plus one p
 
 An estimate may be `null` (that party does not estimate that item). Estimates are compared only among parties that gave one, because a review-days figure and a build-days figure are not comparable.
 
+## Authorization charters
+
+`forum_poc/charter.py` adds a per-party charter set by the human owner: which label levels (public / internal / confidential) may be disclosed to the forum, which agenda items the agent may commit to (with a day cap), and which it may never commit to. Texts carry a label; unlabelled text counts as internal and an unknown label is withheld (fail closed). Withheld text never enters the record or the rendered output; only counts per (party, item, field, label) are shown. A commitment over its cap or outside the listed items becomes a question for the owner ("主人需確認"); a forbidden item is flagged and asks nothing.
+
+Design trade-off: redaction can make a real scope disagreement vanish from the agenda. On the fixture, compliance's confidential "privacy consent" item is withheld, so the multi-party view shows 4 disputes instead of 5, and the count of withheld texts is the only trace. Whoever reads the agenda must treat the withheld count as a signal to ask that owner directly.
+
+Run it with `python3 -m forum_poc.demo_charter`.
+
 ## Run
 
 Python 3, standard library only, no network, no LLM.
@@ -36,12 +44,13 @@ Python 3, standard library only, no network, no LLM.
 python3 -m unittest discover -s tests -t .
 python3 -m forum_poc.demo
 python3 -m forum_poc.demo_multi
+python3 -m forum_poc.demo_charter
 ```
 
 ## Limits (read these)
 
 - No LLM is involved. Extracting the structured fields from real documents, and generating the criteria questions, are the hard parts and are not implemented here.
-- The two-party functions are unchanged. The multi-party module covers comparison only: no identity, authorization, commitments, or prompt-injection handling, and no forum UI.
+- The two-party functions are unchanged. The multi-party module covers comparison only: no identity and no forum UI. The charter module is rule-based and deterministic: labels are supplied by hand, not detected, and a charter is trusted as given (nothing proves it came from the owner). Prompt-injection handling (treating other agents' posts as untrusted input) is not implemented.
 - The estimate-ratio threshold is a parameter with no calibration data behind it.
 - Tested only on the synthetic fixtures in `fixtures/`. Not validated on any real case.
 

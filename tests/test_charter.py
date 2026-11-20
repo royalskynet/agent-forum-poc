@@ -119,6 +119,14 @@ class ApplyCharter(unittest.TestCase):
         self.assertNotIn("SECRET", repr(withheld))
         self.assertEqual(len(withheld), 3)
 
+    def test_unknown_label_withheld_even_if_charter_lists_it(self):
+        sub = {"party": "a", "items": {"x": item(inc=["w"], labels={"w": "絕密"})}}
+        c = charter("a", show=("公開", "內部", "機密"))
+        c["可揭露"].append("絕密")
+        visible, withheld = apply_charter(sub, c)
+        self.assertEqual(visible["items"]["x"]["含"], [])
+        self.assertEqual(len(withheld), 1)
+
     def test_label_map_not_exposed(self):
         visible, _ = apply_charter(self.sub, charter("a"))
         self.assertNotIn("標籤", visible["items"]["x"])
@@ -265,6 +273,17 @@ class ChartedAgenda(unittest.TestCase):
         self.assertNotIn("SECRET", render_chartered(rec))
         self.assertEqual(sum(g["數量"] for g in rec["遮蔽"]), 2)
 
+    def test_withheld_count_aggregates_same_group(self):
+        subs = [
+            {"party": "a", "items": {"x": item(inc=["w", "S1", "S2", "S3"], est=2, labels={"S1": "機密", "S2": "機密", "S3": "機密"})}},
+            {"party": "b", "items": {"x": item(inc=["w"], est=2)}},
+        ]
+        rec = build_chartered_agenda(subs, [charter("a"), charter("b")], [], [])
+        self.assertEqual(
+            rec["遮蔽"],
+            [{"party": "a", "議程項目": "x", "欄位": "含", "標籤": "機密", "數量": 3}],
+        )
+
     def test_order_independent(self):
         subs, cs = labelled_four(), charters()
         base = render_chartered(build_chartered_agenda(subs, cs, criteria(), commitments()))
@@ -278,6 +297,25 @@ class ChartedAgenda(unittest.TestCase):
         snapshots = copy.deepcopy((subs, cs, cm))
         build_chartered_agenda(subs, cs, criteria(), cm)
         self.assertEqual((subs, cs, cm), snapshots)
+
+    def test_duplicate_charter_for_same_party_rejected(self):
+        wide = charters()
+        narrow = copy.deepcopy(wide[0])
+        narrow["可揭露"] = []
+        for order in (wide + [narrow], [narrow] + wide):
+            with self.assertRaises(ValueError):
+                build_chartered_agenda(labelled_four(), order, criteria(), [])
+
+    def test_same_party_item_commitments_order_independent(self):
+        cm = [
+            {"party": "product", "議程項目": "邀請領券", "估時_天": 9},
+            {"party": "product", "議程項目": "邀請領券", "估時_天": 3},
+        ]
+        a = build_chartered_agenda(labelled_four(), charters(), criteria(), cm)
+        b = build_chartered_agenda(labelled_four(), charters(), criteria(), list(reversed(cm)))
+        self.assertEqual(a["承諾檢查"], b["承諾檢查"])
+        self.assertEqual(a["待答題"], b["待答題"])
+        self.assertEqual([c["估時_天"] for c in a["承諾檢查"]], [3, 9])
 
     def test_missing_or_extra_charter_rejected(self):
         with self.assertRaises(ValueError):
