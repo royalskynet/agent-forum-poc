@@ -20,6 +20,14 @@ Rules, all deterministic and covered by tests:
 - A criteria answer counts only if it is a number with a unit (deadline, budget) or names both an artifact and a sign-off person (acceptance). Answers like "asap" stay undecided.
 - A devil's-advocate round is triggered only when there are zero flags across all agenda items (suspiciously fast agreement). If any flag exists, there is already disagreement to discuss.
 
+## Multi-party mode
+
+`forum_poc/multi.py` generalizes the comparison to any number of parties (two or more). It aggregates by agenda item and work item, so one contested work item becomes one dispute with a per-party stance (in scope / explicitly out / not mentioned), instead of one flag per pair of parties. On the synthetic four-party fixture in `fixtures/multi/` (product, engineering, compliance, an English-language team) the pairwise function produces 13 directed scope flags (counted after replacing the null estimates with 1, because the two-party function cannot take null), while the multi-party view shows 4 scope disputes plus 1 estimate dispute.
+
+The output ends with a list of questions for humans: one per dispute, plus one per undecided criteria answer, with a total count. The questions are filled from fixed templates. No LLM writes them.
+
+An estimate may be `null` (that party does not estimate that item). Estimates are compared only among parties that gave one, because a review-days figure and a build-days figure are not comparable.
+
 ## Run
 
 Python 3, standard library only, no network, no LLM.
@@ -27,12 +35,13 @@ Python 3, standard library only, no network, no LLM.
 ```
 python3 -m unittest discover -s tests -t .
 python3 -m forum_poc.demo
+python3 -m forum_poc.demo_multi
 ```
 
 ## Limits (read these)
 
 - No LLM is involved. Extracting the structured fields from real documents, and generating the criteria questions, are the hard parts and are not implemented here.
-- Two parties only. No identity, authorization, or prompt-injection handling. No forum UI.
+- The two-party functions are unchanged. The multi-party module covers comparison only: no identity, authorization, commitments, or prompt-injection handling, and no forum UI.
 - The estimate-ratio threshold is a parameter with no calibration data behind it.
 - Tested only on the synthetic fixtures in `fixtures/`. Not validated on any real case.
 

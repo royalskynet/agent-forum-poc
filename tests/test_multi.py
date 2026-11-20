@@ -87,6 +87,12 @@ class Disputes(unittest.TestCase):
             {"eng": "含", "product": "未提及", "compliance": "明確排除", "english": "未提及"},
         )
 
+    def test_disputes_sorted_by_item_kind_content(self):
+        disputes = find_disputes(four())
+        keys = [(d["議程項目"], d["種類"], d["內容"]) for d in disputes]
+        self.assertEqual(keys, sorted(keys))
+        self.assertEqual(disputes[0]["種類"], "估時分歧")
+
     def test_one_dispute_per_item_and_work_item(self):
         keys = [(d["種類"], d["議程項目"], d["內容"]) for d in find_disputes(four())]
         self.assertEqual(len(keys), len(set(keys)))

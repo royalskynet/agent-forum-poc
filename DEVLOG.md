@@ -42,4 +42,23 @@ Two mistakes worth recording, both in the mutation harness, not in the code unde
 - Nothing here uses an LLM. Whether an agent can extract the structured fields from real documents, or generate the criteria questions, is untested.
 - The estimate-ratio threshold (2.0) has no calibration data.
 - Only synthetic fixtures were used. No real case was run.
-- Two parties only. No authorization, identity, or prompt-injection handling.
+- Two parties only in the original version. No authorization, identity, or prompt-injection handling (see the extension below for the multi-party comparison).
+
+## Multi-party extension (same day, Asia/Taipei)
+Goal: let more than two parties (for example product, engineering, compliance and an English-language team) be compared in one pass. "English department" was read as one more generic party, not as a special case.
+
+Design decisions made before any code:
+- Aggregate by agenda item and work item. Pairwise comparison explodes with party count: on the four-party fixture it gives 13 directed scope flags (counted after replacing the null estimates with 1, because the two-party function cannot take null), while 4 contested work items is what a human needs to see.
+- Allow `估時_天` to be explicitly `null` (not estimating). Dividing a review-days figure by a build-days figure would raise false divergences. A missing key is still rejected.
+- Every party must submit every agenda item (an empty in-scope list means no opinion). The same work item listed as both in and out of scope in one item is rejected.
+- The old two-party functions and their 35 tests stay untouched as the regression baseline.
+
+Process: the supervising session wrote the four-party fixtures and 30 new tests first, recorded SHA-256 hashes of every test and fixture, and confirmed the suite was red. Implementation went to a low-cost LLM executor under a work order whose acceptance script checks the hashes first. One attempt, then an independent model review (APPROVE). The supervising session re-ran acceptance itself and read the diff.
+
+Raw results before the extra test described below: `Ran 65 tests ... OK`, hashes 0 mismatches, `python3 -m forum_poc.demo_multi` exits 0 and prints 5 disputes and `待答題總數：6`.
+
+Mutation checks (control exited 0 before and after): 9 mutants. 8 failed the tests. One survived: removing the final sort of disputes. The earlier per-item and per-work-item sorting already made the order deterministic, so the test for submission-order independence could not see it; only the order between an estimate dispute and a scope dispute inside one agenda item depended on that line. The supervising session added a test that pins the order, regenerated the hashes (the executor never touched tests), and re-ran: 66 tests OK, and that mutant now fails.
+
+Not proven, in addition to the list above:
+- The four-party fixture was written by the supervising session, so the 13-to-6 reduction demonstrates the mechanism on a hand-built case, not on a real one.
+- Question wording is template text. Whether humans find these questions the right ones is untested.
