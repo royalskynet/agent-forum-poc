@@ -1,12 +1,12 @@
 # agent-forum-poc
 
-A minimal proof of concept for one idea: before two parties' AI agents discuss a topic, force each side to submit a structured scope first, then mechanically detect where the two sides mean different things by the same words. Humans only answer the few questions that remain.
+A minimal proof of concept for one idea: before two or more parties' AI agents discuss a topic, force each side to submit a structured scope first, then mechanically detect where the two sides mean different things by the same words. Humans only answer the few questions that remain.
 
-這是一個最小概念驗證：兩方的 AI agent 討論前，先各自交出結構化的範圍定義，再用程式比對雙方「同一個詞卻指不同範圍」的地方。人類只回答剩下的少數問題。
+這是一個最小概念驗證：兩方以上的 AI agent 討論前，先各自交出結構化的範圍定義，再用程式比對雙方「同一個詞卻指不同範圍」的地方。人類只回答剩下的少數問題。
 
 ## What it does
 
-Input: two JSON submissions (each lists, per agenda item, what is in scope, what is out, assumptions, estimated days, dependencies) and a list of answered "criteria questions".
+Two-party mode. Input: two JSON submissions (each lists, per agenda item, what is in scope, what is out, assumptions, estimated days, dependencies) and a list of answered "criteria questions".
 
 Output: a one-page decision record with
 - scope mismatches (a work item one side includes and the other excludes or never mentions)

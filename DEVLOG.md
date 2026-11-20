@@ -59,6 +59,12 @@ Raw results before the extra test described below: `Ran 65 tests ... OK`, hashes
 
 Mutation checks (control exited 0 before and after): 9 mutants. 8 failed the tests. One survived: removing the final sort of disputes. The earlier per-item and per-work-item sorting already made the order deterministic, so the test for submission-order independence could not see it; only the order between an estimate dispute and a scope dispute inside one agenda item depended on that line. The supervising session added a test that pins the order, regenerated the hashes (the executor never touched tests), and re-ran: 66 tests OK, and that mutant now fails.
 
+Review friction (recorded because it cost time):
+- After the executor's review passed, the supervising session added one test, the README section and this log section. The first-pass reviewer (another model, run on the whole staged change set) then rejected the work twice as out of scope, counting those supervisor-owned changes as executor overreach. Restricting the review to the executor's two files by path did not help, because it still read the full staged set.
+- A second reviewer checked the claim against evidence outside the edited files: the executor's own log recorded the old test hash and ended before the later edits' timestamps. It re-ran the tests and the hash check, spot-checked one mutant, and approved.
+- Any edit after a verdict changes the review fingerprint. A wording-only fix needed a re-check, so supervisor-side edits should be finished before review is requested.
+- One planned log correction was not applied the first time: a guard blocked the whole chained shell command, so nothing in it ran. It was applied in a later commit.
+
 Not proven, in addition to the list above:
 - The four-party fixture was written by the supervising session, so the reduction from 13 directed scope flags to 4 scope disputes demonstrates the mechanism on a hand-built case, not on a real one.
 - Question wording is template text. Whether humans find these questions the right ones is untested.
