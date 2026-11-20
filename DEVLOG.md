@@ -10,9 +10,9 @@ A deterministic core: submission validation, scope-mismatch and estimate-diverge
    - A planned similarity threshold for "too fast agreement" was a dead parameter: when there are zero mismatch flags the two sides' in-scope sets are identical, so similarity is always 1. The trigger became "zero flags across all agenda items".
    - An agenda item submitted by only one side was silently skipped by the set intersection. It is now rejected in validation.
    - An estimate of 0 would divide by zero. It is now rejected in validation.
-4. Wrote all tests and fixtures first, by hand, and recorded their SHA-256 hashes. At that point the suite was red (the new modules did not exist yet).
+4. The supervising session (an AI coding agent) wrote all tests and fixtures first and recorded their SHA-256 hashes. At that point the suite was red (the new modules did not exist yet).
 5. Dispatched implementation to a low-cost LLM executor through a job queue, in two work orders (validation, criteria and convergence; then record and demo). Each order's acceptance command checked that the test and fixture hashes were unchanged and that the tests pass.
-6. Reviewed each diff by hand and re-ran the acceptance command myself instead of trusting the executor's self-report.
+6. The supervising session reviewed each diff and re-ran the acceptance command itself instead of trusting the executor's self-report.
 
 ## Raw results
 After order 1 (26 tests): `Ran 26 tests ... OK`.
@@ -33,7 +33,10 @@ Each mutant was run against the full suite or the relevant test modules, with an
 | devil's-advocate trigger forced true | tests fail |
 | demo reads a wrong fixtures folder | tests fail |
 
-A mistake worth recording: my first mutation run reported failures for every mutant, including the control. The cause was twofold. The suite was red anyway because some modules did not exist yet, and my shell script passed the module list as one quoted word (zsh does not word-split unquoted variables), so it never ran the tests I meant. Re-running with the module list expanded properly and a control that exits 0 gave the table above. A red result only counts when the control is green.
+Two mistakes worth recording, both in the mutation harness, not in the code under test:
+- First run: no unmutated control, and the full suite was red anyway because the record and demo modules did not exist yet. Every mutant "failed", which proved nothing.
+- Second run: restricted to the relevant test modules and added a control, but the control also failed. The shell script passed the module list as one word (zsh does not word-split unquoted variables), so it never ran the tests I meant.
+- Third run: module list expanded properly. The control exited 0 and every mutant exited 1, giving the table above. A red result only counts when the control is green.
 
 ## Not proven
 - Nothing here uses an LLM. Whether an agent can extract the structured fields from real documents, or generate the criteria questions, is untested.
