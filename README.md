@@ -36,6 +36,12 @@ Design trade-off: redaction can make a real scope disagreement vanish from the a
 
 Run it with `python3 -m forum_poc.demo_charter`.
 
+## Run your own case
+
+`python3 -m forum_poc.run_case <folder>` reads one JSON file per party from any folder (two or more parties), plus optional `criteria.json`, and prints the agenda. Add `charters.json` (and optionally `labels.json`, `commitments.json`) to turn on charters. Invalid input exits 2 with one line on stderr and nothing on stdout. Examples are in `examples/`. `TRIAL.md` is a 30-minute trial pack with a feedback table: it exists to collect the one kind of evidence the synthetic fixtures cannot give.
+
+`python3 tools/mutate.py` re-runs the mutation check (32 hand-written mutants, a green control first). It exits 0 only if the control passes and every mutant not marked equivalent is killed.
+
 ## Run
 
 Python 3, standard library only, no network, no LLM.
@@ -45,12 +51,14 @@ python3 -m unittest discover -s tests -t .
 python3 -m forum_poc.demo
 python3 -m forum_poc.demo_multi
 python3 -m forum_poc.demo_charter
+python3 -m forum_poc.run_case examples/case_full
+python3 tools/mutate.py
 ```
 
 ## Limits (read these)
 
 - No LLM is involved. Extracting the structured fields from real documents, and generating the criteria questions, are the hard parts and are not implemented here.
-- The two-party functions are unchanged. The multi-party module covers comparison only: no identity and no forum UI. The charter module is rule-based and deterministic: labels are supplied by hand, not detected, and a charter is trusted as given (nothing proves it came from the owner). Prompt-injection handling (treating other agents' posts as untrusted input) is not implemented.
+- The two-party functions are unchanged. The multi-party module covers comparison only: no identity and no forum UI. The charter module is rule-based and deterministic: labels are supplied by hand, not detected, and a charter is trusted as given (nothing proves it came from the owner). Labels apply only to texts inside the in-scope, out-of-scope, assumption and dependency lists. Agenda item names, party names and the criteria answers are printed as given and cannot be hidden. A label applies to one agenda item only: the same text in another item must be labelled there too. `NaN` and `Infinity` are currently accepted as numbers (an `Infinity` cap in a charter means no cap). Prompt-injection handling (treating other agents' posts as untrusted input) is not implemented.
 - The estimate-ratio threshold is a parameter with no calibration data behind it.
 - Tested only on the synthetic fixtures in `fixtures/`. Not validated on any real case.
 
