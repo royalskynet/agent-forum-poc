@@ -60,5 +60,5 @@ Raw results before the extra test described below: `Ran 65 tests ... OK`, hashes
 Mutation checks (control exited 0 before and after): 9 mutants. 8 failed the tests. One survived: removing the final sort of disputes. The earlier per-item and per-work-item sorting already made the order deterministic, so the test for submission-order independence could not see it; only the order between an estimate dispute and a scope dispute inside one agenda item depended on that line. The supervising session added a test that pins the order, regenerated the hashes (the executor never touched tests), and re-ran: 66 tests OK, and that mutant now fails.
 
 Not proven, in addition to the list above:
-- The four-party fixture was written by the supervising session, so the 13-to-6 reduction demonstrates the mechanism on a hand-built case, not on a real one.
+- The four-party fixture was written by the supervising session, so the reduction from 13 directed scope flags to 4 scope disputes demonstrates the mechanism on a hand-built case, not on a real one.
 - Question wording is template text. Whether humans find these questions the right ones is untested.
