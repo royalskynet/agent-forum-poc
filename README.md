@@ -58,7 +58,8 @@ python3 tools/mutate.py
 ## Limits (read these)
 
 - No LLM is involved. Extracting the structured fields from real documents, and generating the criteria questions, are the hard parts and are not implemented here.
-- The two-party functions are unchanged. The multi-party module covers comparison only: no identity and no forum UI. The charter module is rule-based and deterministic: labels are supplied by hand, not detected, and a charter is trusted as given (nothing proves it came from the owner). Labels apply only to texts inside the in-scope, out-of-scope, assumption and dependency lists. Agenda item names, party names and the criteria answers are printed as given and cannot be hidden. A label applies to one agenda item only: the same text in another item must be labelled there too. `NaN` and `Infinity` are currently accepted as numbers (an `Infinity` cap in a charter means no cap). Prompt-injection handling (treating other agents' posts as untrusted input) is not implemented.
+- The multi-party module covers comparison only: no identity and no forum UI. The charter module is rule-based and deterministic: labels are supplied by hand, not detected, and a charter is trusted as given (nothing proves it came from the owner). Labels apply only to texts inside the in-scope, out-of-scope, assumption and dependency lists. Agenda item names, party names and the criteria answers are printed as given and cannot be hidden. A label applies to one agenda item only: the same text in another item must be labelled there too. Prompt-injection handling (treating other agents' posts as untrusted input) is not implemented.
+- Estimates, commitments and charter caps must be finite positive numbers. Multi-party estimates may also be `null`.
 - The estimate-ratio threshold is a parameter with no calibration data behind it.
 - Tested only on the synthetic fixtures in `fixtures/`. Not validated on any real case.
 

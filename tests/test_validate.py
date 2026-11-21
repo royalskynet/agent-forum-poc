@@ -29,6 +29,13 @@ class ValidateSubmission(unittest.TestCase):
         s["items"]["邀請領券"]["估時_天"] = -3
         self.assertTrue(validate_submission(s))
 
+    def test_non_finite_estimate_rejected(self):
+        for bad in (float("nan"), float("inf"), float("-inf")):
+            with self.subTest(estimate=bad):
+                s = load("product")
+                s["items"]["邀請領券"]["估時_天"] = bad
+                self.assertTrue(validate_submission(s))
+
     def test_empty_items_rejected(self):
         s = load("product")
         s["items"] = {}

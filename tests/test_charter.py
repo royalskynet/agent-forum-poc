@@ -64,7 +64,7 @@ class CharterValidation(unittest.TestCase):
         self.assertTrue(validate_charter(charter("a", show=("公開", "亂寫"))))
 
     def test_bad_caps_rejected(self):
-        for bad in (0, -1, True, "5"):
+        for bad in (0, -1, True, "5", float("nan"), float("inf"), float("-inf")):
             c = charter("a", can={"x": {"估時_天_上限": bad}})
             self.assertTrue(validate_charter(c), bad)
 
@@ -194,7 +194,7 @@ class CheckCommitment(unittest.TestCase):
         self.assertEqual(check_commitment(self.c, "y", 1), "禁止")
 
     def test_bad_days_rejected(self):
-        for bad in (0, -2, True, "3", None):
+        for bad in (0, -2, True, "3", None, float("nan"), float("inf"), float("-inf")):
             with self.assertRaises(ValueError):
                 check_commitment(self.c, "x", bad)
 

@@ -1,14 +1,11 @@
 import copy
 
-from .multi import LIST_FIELDS, build_agenda, render_agenda, validate_multi
+from .multi import build_agenda, render_agenda, validate_multi
+from .validate import LIST_FIELDS, _is_number
 
 LABELS = ("公開", "內部", "機密")
 DEFAULT_LABEL = "內部"
 FIELD_ORDER = {name: index for index, name in enumerate(LIST_FIELDS)}
-
-
-def _is_number(value):
-    return isinstance(value, (int, float)) and not isinstance(value, bool)
 
 
 def _item_labels(item):
