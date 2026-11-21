@@ -48,6 +48,12 @@ class Validation(unittest.TestCase):
             subs = [sub("a", {"x": item(est=bad)}), sub("b", {"x": item()})]
             self.assertTrue(validate_multi(subs), bad)
 
+    def test_non_finite_estimate_rejected(self):
+        for bad in (float("nan"), float("inf"), float("-inf")):
+            with self.subTest(estimate=bad):
+                subs = [sub("a", {"x": item(est=bad)}), sub("b", {"x": item()})]
+                self.assertTrue(validate_multi(subs))
+
     def test_single_party_rejected(self):
         self.assertTrue(validate_multi(four()[:1]))
 

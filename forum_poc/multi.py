@@ -1,12 +1,7 @@
 from .convergence import should_inject_devil
 from .criteria import check_answer
 from .misalign import PHI
-
-LIST_FIELDS = ("含", "不含", "假設", "依賴")
-
-
-def _is_number(value):
-    return isinstance(value, (int, float)) and not isinstance(value, bool)
+from .validate import LIST_FIELDS, _is_number
 
 
 def _party_label(sub, index):

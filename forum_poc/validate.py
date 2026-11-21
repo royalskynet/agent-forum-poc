@@ -1,8 +1,12 @@
+import math
+
 LIST_FIELDS = ("含", "不含", "假設", "依賴")
 
 
 def _is_number(value):
-    return isinstance(value, (int, float)) and not isinstance(value, bool)
+    if isinstance(value, int):
+        return not isinstance(value, bool)
+    return isinstance(value, float) and math.isfinite(value)
 
 
 def _validate_item(item):
