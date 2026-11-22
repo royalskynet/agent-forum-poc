@@ -44,7 +44,7 @@ class CheckAnswer(unittest.TestCase):
                 self.assertEqual(check_answer("驗收標準", answer)[0], "未定")
 
     def test_acceptance_real_values_ok(self):
-        for answer in ("產物：測試報告；簽核：PM 王小明", "產物: report;簽核: PM Wang", "簽核：王；產物：報告", "產物：報告 簽核：王"):
+        for answer in ("產物：測試報告；簽核：PM 王小明", "產物: report;簽核: PM Wang", "簽核：王；產物：報告", "產物：報告 簽核：王", "產物：\n測試報告\n簽核：\nPM 王小明"):
             with self.subTest(answer=answer):
                 self.assertEqual(check_answer("驗收標準", answer)[0], "ok")
 
