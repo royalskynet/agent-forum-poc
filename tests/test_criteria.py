@@ -39,7 +39,7 @@ class CheckAnswer(unittest.TestCase):
                 self.assertEqual(check_answer("驗收標準", answer)[0], "未定")
 
     def test_acceptance_empty_values_undecided(self):
-        for answer in ("", "產物：簽核：王", "簽核：產物：測試報告", "產物： ；簽核：王", "產物：測試報告；簽核："):
+        for answer in ("", "產物：簽核：王", "簽核：產物：測試報告", "產物： ；簽核：王", "產物：測試報告；簽核：", "產物：\n\n備註：待確認\n簽核：王"):
             with self.subTest(answer=answer):
                 self.assertEqual(check_answer("驗收標準", answer)[0], "未定")
 

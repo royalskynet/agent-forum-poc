@@ -2,8 +2,8 @@ import re
 
 QUANTIFIED_KINDS = ("硬性限制", "預算")
 QUANTITY_RE = re.compile(r"\d+(\.\d+)?\s*(天|週|小時|分鐘|%|元|萬|人天)")
-ARTIFACT_RE = re.compile(r"產物[:：]\s*(.*?)(?=產物[:：]|簽核[:：]|[;；\n]|$)")
-SIGNER_RE = re.compile(r"簽核[:：]\s*(.*?)(?=產物[:：]|簽核[:：]|[;；\n]|$)")
+ARTIFACT_RE = re.compile(r"產物[:：][^\S\n]*\n?[^\S\n]*(.*?)(?=產物[:：]|簽核[:：]|[;；\n]|$)")
+SIGNER_RE = re.compile(r"簽核[:：][^\S\n]*\n?[^\S\n]*(.*?)(?=產物[:：]|簽核[:：]|[;；\n]|$)")
 
 
 def _has_value(pattern, text):
