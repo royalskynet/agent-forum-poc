@@ -28,6 +28,26 @@ class CheckAnswer(unittest.TestCase):
     def test_acceptance_missing_artifact_undecided(self):
         self.assertEqual(check_answer("驗收標準", "簽核：營運主管")[0], "未定")
 
+    def test_acceptance_punctuation_only_values_undecided(self):
+        for answer in (
+            "產物：；簽核：；",
+            "產物：...！？；簽核：王",
+            "產物：測試報告；簽核：，。！",
+            "產物: ;簽核: ;",
+        ):
+            with self.subTest(answer=answer):
+                self.assertEqual(check_answer("驗收標準", answer)[0], "未定")
+
+    def test_acceptance_empty_values_undecided(self):
+        for answer in ("", "產物：簽核：王", "簽核：產物：測試報告", "產物： ；簽核：王", "產物：測試報告；簽核：", "產物：\n\n備註：待確認\n簽核：王"):
+            with self.subTest(answer=answer):
+                self.assertEqual(check_answer("驗收標準", answer)[0], "未定")
+
+    def test_acceptance_real_values_ok(self):
+        for answer in ("產物：測試報告；簽核：PM 王小明", "產物: report;簽核: PM Wang", "簽核：王；產物：報告", "產物：報告 簽核：王", "產物：\n測試報告\n簽核：\nPM 王小明"):
+            with self.subTest(answer=answer):
+                self.assertEqual(check_answer("驗收標準", answer)[0], "ok")
+
     def test_unknown_kind_undecided(self):
         self.assertEqual(check_answer("其他", "5 天")[0], "未定")
 
