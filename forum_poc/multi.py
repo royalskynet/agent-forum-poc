@@ -1,7 +1,7 @@
 from .convergence import should_inject_devil
 from .criteria import check_answer
 from .misalign import PHI
-from .validate import LIST_FIELDS, _is_number
+from .validate import _is_number, _validate_list_fields
 
 
 def _party_label(sub, index):
@@ -48,11 +48,9 @@ def validate_multi(subs):
             if not isinstance(item, dict):
                 errors.append(f"{label}／{name}：議程項目必須是 dict")
                 continue
-            for field in LIST_FIELDS:
-                if field not in item:
-                    errors.append(f"{label}／{name}：缺少欄位：{field}")
-                elif not isinstance(item[field], list):
-                    errors.append(f"{label}／{name}：欄位型別錯誤（須為 list）：{field}")
+            errors.extend(
+                f"{label}／{name}：{error}" for error in _validate_list_fields(item)
+            )
             if "估時_天" not in item:
                 errors.append(f"{label}／{name}：缺少欄位：估時_天")
             else:
@@ -64,7 +62,7 @@ def validate_multi(subs):
             exc = item.get("不含")
             if isinstance(inc, list) and isinstance(exc, list):
                 for work in inc:
-                    if work in exc:
+                    if isinstance(work, str) and work in exc:
                         errors.append(f"{label}／{name}：工作項同時在含與不含：{work}")
 
     all_names = set()
