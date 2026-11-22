@@ -9,13 +9,22 @@ def _is_number(value):
     return isinstance(value, float) and math.isfinite(value)
 
 
-def _validate_item(item):
+def _validate_list_fields(item):
     errors = []
     for field in LIST_FIELDS:
         if field not in item:
             errors.append(f"缺少欄位：{field}")
         elif not isinstance(item[field], list):
             errors.append(f"欄位型別錯誤（須為 list）：{field}")
+        else:
+            for index, value in enumerate(item[field]):
+                if not isinstance(value, str):
+                    errors.append(f"欄位元素必須是字串：{field}[{index}]")
+    return errors
+
+
+def _validate_item(item):
+    errors = _validate_list_fields(item)
     if "估時_天" not in item:
         errors.append("缺少欄位：估時_天")
     else:
@@ -30,18 +39,20 @@ def validate_submission(sub):
     if not isinstance(sub, dict):
         return ["提交必須是 dict"]
     party = sub.get("party")
+    label = party
     if not isinstance(party, str) or not party:
         errors.append("party 必須是非空字串")
+        label = "未命名提交"
     items = sub.get("items")
     if not isinstance(items, dict) or not items:
         errors.append("items 必須是非空 dict")
         return errors
     for name, item in items.items():
+        location = f"{label}／{name}"
         if not isinstance(item, dict):
-            errors.append(f"議程項目必須是 dict：{name}")
+            errors.append(f"{location}：議程項目必須是 dict")
             continue
-        for error in _validate_item(item):
-            errors.append(f"{name}：{error}")
+        errors.extend(f"{location}：{error}" for error in _validate_item(item))
     return errors
 
 

@@ -51,6 +51,16 @@ class ValidateSubmission(unittest.TestCase):
         s["items"]["邀請領券"]["含"] = "分享連結"
         self.assertTrue(validate_submission(s))
 
+    def test_non_string_list_entries_name_party_item_and_field(self):
+        for field, bad in (("含", {}), ("不含", 1), ("假設", None), ("依賴", False)):
+            with self.subTest(field=field):
+                s = load("product")
+                s["items"]["邀請領券"][field] = ["文字", bad]
+                self.assertEqual(
+                    validate_submission(s),
+                    [f"product／邀請領券：欄位元素必須是字串：{field}[1]"],
+                )
+
 
 class ValidatePair(unittest.TestCase):
     def test_matching_pair_ok(self):

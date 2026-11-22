@@ -85,6 +85,10 @@ def run(directory):
     criteria_path = os.path.join(directory, "criteria.json")
     answers = _read_list(criteria_path) if os.path.exists(criteria_path) else []
 
+    errors = validate_multi(subs)
+    if errors:
+        raise ValueError("；".join(errors))
+
     charters_path = os.path.join(directory, "charters.json")
     labels_path = os.path.join(directory, "labels.json")
     commitments_path = os.path.join(directory, "commitments.json")
@@ -116,10 +120,6 @@ def run(directory):
             raise ValueError(
                 f"{os.path.basename(path)} 需要搭配 charters.json 才能使用"
             )
-
-    errors = validate_multi(subs)
-    if errors:
-        raise ValueError("；".join(errors))
 
     return render_agenda(build_agenda(subs, answers))
 

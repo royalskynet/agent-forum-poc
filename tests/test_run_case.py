@@ -120,6 +120,31 @@ class RunCase(unittest.TestCase):
             self.assertTrue(r.stderr.strip(), path)
             self.assertEqual(r.stdout, "", path)
 
+    def test_non_string_list_entries_report_validation_errors(self):
+        for case in ("examples/case_basic", "examples/case_full"):
+            d = self.copy(case)
+            path = os.path.join(d, "eng.json")
+            s = load(path)
+            for field, values, index in (
+                ("含", [{}], 0),
+                ("含", ["x", 1], 1),
+                ("不含", [None], 0),
+                ("假設", [False], 0),
+                ("依賴", [[]], 0),
+            ):
+                with self.subTest(case=case, field=field, values=values):
+                    original = s["items"]["邀請領券"][field]
+                    s["items"]["邀請領券"][field] = values
+                    with open(path, "w", encoding="utf-8") as f:
+                        json.dump(s, f, ensure_ascii=False)
+                    s["items"]["邀請領券"][field] = original
+                    r = run(d)
+                    self.assertEqual(r.returncode, 2)
+                    self.assertEqual(r.stdout, "")
+                    self.assertEqual(
+                        r.stderr, f"eng／邀請領券：欄位元素必須是字串：{field}[{index}]\n"
+                    )
+
     def test_labels_not_a_dict_or_unknown_party_fails_loud(self):
         for bad in ([], {"ghost": {"邀請領券": {"隱私同意": "機密"}}}):
             d = self.copy("examples/case_full")
